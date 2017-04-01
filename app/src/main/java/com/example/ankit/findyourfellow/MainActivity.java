@@ -1,13 +1,19 @@
 package com.example.ankit.findyourfellow;
 
 import android.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -62,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         reset = (Button) findViewById(R.id.resetButton);
 
 
-        mAuthListener = new FirebaseAuth.AuthStateListener()
+                mAuthListener = new FirebaseAuth.AuthStateListener()
         {
 
             @Override
@@ -92,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         {
             public void onClick(View v)
             {
-                goToCreateActivity();
+               goToCreateActivity();
             }
         });
 
@@ -100,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         {
             public void onClick(View v)
             {
+
                 startLogin();
             }
         });
@@ -107,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 resetPassword();
             }
         });
@@ -135,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         {
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)
             {
+
                 enable_buttons();
             }
             else
@@ -147,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
     void goToCreateActivity()
     {
+
         Intent intent = new Intent(MainActivity.this, CreateProfileActivity.class);
         startActivity(intent);
     }
@@ -160,9 +170,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart()
     {
         super.onStart();
-
         mAuth.addAuthStateListener(mAuthListener);
     }
+
+
+
 
     private void resetPassword()
     {
@@ -235,7 +247,58 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+////////////////////////added///////////////////////////////////////////////
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        InternetAvailability();
+    }
+
+    private void InternetAvailability() {
+
+        if (!isNetworkAvailable())
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("No Internet Connection, do you want to enable it?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int id)
+                        {
+                            goToMobileDataSettings();
+
+                                                   }
+
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Toast.makeText(MainActivity.this, "Internet Connection Not Avalailable", Toast.LENGTH_LONG).show();
+                            dialog.cancel();
+                        }
+                    });
+
+            builder.create().show();
+        }
+
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    public void goToMobileDataSettings()
+    {
+        Intent mobileIntent = new Intent();
+        mobileIntent.setComponent(new ComponentName("com.android.settings", "com.android.settings.Settings$DataUsageSummaryActivity")); //for data enabled
+        startActivity(mobileIntent);
+    }
+
+/////////////////////////////////////////////////////////////////////////////
 
 
     /*
