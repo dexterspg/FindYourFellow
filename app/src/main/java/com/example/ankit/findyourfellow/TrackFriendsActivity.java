@@ -128,21 +128,21 @@ public class TrackFriendsActivity extends AppCompatActivity {
         trackingRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+
                 String canTrack = dataSnapshot.getValue().toString();
 
-                if (canTrack.equals("yes"))
-                {
+                if (canTrack.equals("yes")) {
                     trackingSwitch.setChecked(true);
                     Intent intent = new Intent(getApplicationContext(), LocationHelper.class);
                     startService(intent);
-                }
-                else
-                {
+                } else {
                     trackingSwitch.setChecked(false);
                     Intent intent = new Intent(getApplicationContext(), LocationHelper.class);
                     stopService(intent);
                 }
             }
+        }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {

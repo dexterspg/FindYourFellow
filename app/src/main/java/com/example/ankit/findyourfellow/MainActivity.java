@@ -1,16 +1,20 @@
 package com.example.ankit.findyourfellow;
 
 import android.*;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -45,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth.AuthStateListener mAuthListener;
 
-
-    @Override
+      @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -67,8 +70,7 @@ public class MainActivity extends AppCompatActivity {
         loginToProfileButton = (Button) findViewById(R.id.loginButton);
         reset = (Button) findViewById(R.id.resetButton);
 
-
-                mAuthListener = new FirebaseAuth.AuthStateListener()
+                    mAuthListener = new FirebaseAuth.AuthStateListener()
         {
 
             @Override
@@ -261,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isNetworkAvailable())
         {
+            vibratePhone();
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setMessage("No Internet Connection, do you want to enable it?")
                     .setCancelable(false)
@@ -300,6 +303,55 @@ public class MainActivity extends AppCompatActivity {
 
 /////////////////////////////////////////////////////////////////////////////
 
+public void vibratePhone(){
+
+    long[] pattern = {50,100,1000};
+    Vibrator vibe=(Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    vibe.vibrate(pattern,0);
+    countDown();
+
+
+
+
+
+    //when phone is sleeping
+    BroadcastReceiver vibrateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+
+                long[] pattern = {50,100,1000};
+                Vibrator vibe=(Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibe.vibrate(pattern,0);
+                countDown();
+
+            }
+        }
+    };
+
+    IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+    registerReceiver(vibrateReceiver, filter);
+    //end
+
+}
+
+    public void countDown(){
+
+
+
+        new CountDownTimer(5000, 1000) { //5 sec countdown
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+                Vibrator v=(Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.cancel();
+            }
+        }.start();
+
+    }
 
     /*
     @Override
@@ -324,5 +376,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     */
+
+
+
 
 }
