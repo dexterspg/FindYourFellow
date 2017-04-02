@@ -1,6 +1,8 @@
 package com.example.ankit.findyourfellow;
 
 import android.*;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,6 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -305,13 +308,11 @@ public class MainActivity extends AppCompatActivity {
 
 public void vibratePhone(){
 
+    addNotification();
     long[] pattern = {50,100,1000};
     Vibrator vibe=(Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
     vibe.vibrate(pattern,0);
     countDown();
-
-
-
 
 
     //when phone is sleeping
@@ -337,8 +338,6 @@ public void vibratePhone(){
 
     public void countDown(){
 
-
-
         new CountDownTimer(5000, 1000) { //5 sec countdown
 
             public void onTick(long millisUntilFinished) {
@@ -351,6 +350,25 @@ public void vibratePhone(){
             }
         }.start();
 
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    private void addNotification() {
+        NotificationCompat.Builder builder =
+                (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.logomain2)
+                        .setContentTitle("Alert! No Internet") //large text
+                        .setContentText("You have no internet, connect to use app");// small text
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
     }
 
     /*
