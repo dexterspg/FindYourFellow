@@ -357,7 +357,7 @@ public void vibratePhone(){
     private void addNotification() {
         NotificationCompat.Builder builder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.logomain2)
+                        .setSmallIcon(R.drawable.logomain2) //logo
                         .setContentTitle("Alert! No Internet") //large text
                         .setContentText("You have no internet, connect to use app");// small text
 
