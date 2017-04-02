@@ -318,7 +318,7 @@ public void vibratePhone(){
     BroadcastReceiver vibrateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+            if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && !isNetworkAvailable()) {
 
                 long[] pattern = {50,100,1000};
                 Vibrator vibe=(Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
